@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio BUT3 ESE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : une app à trois vues (accueil, page compétence, page AC) routées par #hash.
+   Chaque compétence porte sa propre couleur (var --c), reprise sur la cuve, la page et la fiche AC. */
+:root {
+  --bg: #eaf0f2;
+  --surface: #ffffff;
+  --surface-2: #f3f7f8;
+  --ink: #0e2330;
+  --muted: #51687a;
+  --line: #ccd8de;
+  --line-strong: #90a6b4;
+  --accent: #0a6c8a;
+  --accent-soft: #d8ecf2;
+  --on-accent: #ffffff;
+  --tick: rgba(14, 35, 48, .26);
+  /* avancement (sémantique) */
+  --s0: #5f7584; --s0-bg: #e6ecef;
+  --s1: #a9640a; --s1-bg: #fbe8c7;
+  --s2: #0a6a86; --s2-bg: #d2ebf3;
+  --s3: #1a7a44; --s3-bg: #d3eedd;
+  /* palette par compétence */
+  --c1: #0a85a8; --c1-bg: #d6eef5; --c1-ink: #073947;
+  --c2: #6a46d2; --c2-bg: #e7ddfb; --c2-ink: #2c1f55;
+  --c3: #c0760a; --c3-bg: #fbe8c9; --c3-ink: #4a2e05;
+  --c4: #1a8a4d; --c4-bg: #d4efdf; --c4-ink: #0d3a22;
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0a1620; --surface: #10212c; --surface-2: #0d1d26; --ink: #e5eef2; --muted: #96abb8;
+    --line: #23404e; --line-strong: #4a6878; --accent: #4cb5d3; --accent-soft: #113644; --on-accent: #07202a;
+    --tick: rgba(229, 238, 242, .28);
+    --s0: #9db0bc; --s0-bg: #1a303c; --s1: #f0b45c; --s1-bg: #3c2e10; --s2: #6fcce6; --s2-bg: #103846; --s3: #6fd199; --s3-bg: #113826;
+    --c1: #45c2e0; --c1-bg: #0f3a49; --c1-ink: #cdeef8;
+    --c2: #a994f2; --c2-bg: #281d4e; --c2-ink: #e4daff;
+    --c3: #f0b65c; --c3-bg: #3c2c0d; --c3-ink: #fbe6c2;
+    --c4: #58cc8a; --c4-bg: #103824; --c4-ink: #d3f1df;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0a1620; --surface: #10212c; --surface-2: #0d1d26; --ink: #e5eef2; --muted: #96abb8;
+  --line: #23404e; --line-strong: #4a6878; --accent: #4cb5d3; --accent-soft: #113644; --on-accent: #07202a;
+  --tick: rgba(229, 238, 242, .28);
+  --s0: #9db0bc; --s0-bg: #1a303c; --s1: #f0b45c; --s1-bg: #3c2e10; --s2: #6fcce6; --s2-bg: #103846; --s3: #6fd199; --s3-bg: #113826;
+  --c1: #45c2e0; --c1-bg: #0f3a49; --c1-ink: #cdeef8;
+  --c2: #a994f2; --c2-bg: #281d4e; --c2-ink: #e4daff;
+  --c3: #f0b65c; --c3-bg: #3c2c0d; --c3-ink: #fbe6c2;
+  --c4: #58cc8a; --c4-bg: #103824; --c4-ink: #d3f1df;
+  color-scheme: dark;
+}
+
+/* chaque conteneur reçoit data-comp="c1".. pour instancier --c / --c-bg / --c-ink */
+[data-comp="c1"] { --c: var(--c1); --c-bg: var(--c1-bg); --c-ink: var(--c1-ink); }
+[data-comp="c2"] { --c: var(--c2); --c-bg: var(--c2-bg); --c-ink: var(--c2-ink); }
+[data-comp="c3"] { --c: var(--c3); --c-bg: var(--c3-bg); --c-ink: var(--c3-ink); }
+[data-comp="c4"] { --c: var(--c4); --c-bg: var(--c4-bg); --c-ink: var(--c4-ink); }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--surface); z-index: 20; }
+a { color: var(--accent); }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; line-height: 1.12; margin: 0; }
+p { margin: 0; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+
+.wrap { max-width: 1120px; margin-inline: auto; padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px)); }
+
+/* en-tête + fil d'ariane */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 21; background: var(--surface); border-bottom: 1px solid var(--line); }
+.bar { display: flex; align-items: center; gap: 14px; min-height: 52px; }
+.brand { font-family: var(--f-mono); font-size: .82rem; font-weight: 500; color: var(--ink); text-decoration: none; letter-spacing: .03em; white-space: nowrap; flex: none; }
+.crumbs { display: flex; align-items: center; gap: 6px; overflow-x: auto; min-width: 0; font-size: .88rem; scrollbar-width: thin; }
+.crumbs a, .crumbs span { white-space: nowrap; }
+.crumbs a { color: var(--muted); text-decoration: none; }
+.crumbs a:hover { color: var(--ink); }
+.crumbs .sep { color: var(--line-strong); }
+.crumbs .cur { color: var(--ink); font-weight: 600; }
+
+main { padding-block: 0 56px; }
+.view { animation: fade .28s ease; }
+@keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+/* ---------- ACCUEIL ---------- */
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 40px; padding-block: 48px 40px; align-items: end; }
+.kicker { font-family: var(--f-mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+.hero h1 { font-size: clamp(2.5rem, 7vw, 4.8rem); font-weight: 700; letter-spacing: -.02em; }
+.hero .lead { margin-top: 18px; max-width: 52ch; font-size: 1.1rem; color: var(--muted); }
+.id-card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; display: grid; gap: 12px; min-width: 0; }
+.id-card div { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 12px; font-size: .92rem; }
+.id-card dt { color: var(--muted); font-family: var(--f-mono); font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; padding-top: 3px; }
+.id-card .todo { color: var(--muted); font-style: italic; }
+
+section { padding-block: 36px; border-top: 1px solid var(--line); }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 24px; margin-bottom: 22px; }
+.sec-head h2 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); font-weight: 700; }
+.sec-head p { color: var(--muted); max-width: 60ch; font-size: .95rem; }
+
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: .78rem; font-weight: 600; padding: 2px 9px 2px 8px; border-radius: 999px; white-space: nowrap; }
+.pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.pill[data-s="0"] { color: var(--s0); background: var(--s0-bg); }
+.pill[data-s="1"] { color: var(--s1); background: var(--s1-bg); }
+.pill[data-s="2"] { color: var(--s2); background: var(--s2-bg); }
+.pill[data-s="3"] { color: var(--s3); background: var(--s3-bg); }
+
+.summary { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; margin-bottom: 18px; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.count { display: inline-flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; font-size: .9rem; }
+.count b { font-family: var(--f-display); font-size: 1.3rem; }
+.summary .illus { margin-left: auto; font-size: .9rem; color: var(--muted); text-align: right; }
+.summary .illus b { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+.dash { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 256px), 1fr)); gap: 14px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--c); border-radius: 12px; padding: 16px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 16px; align-content: start; }
+.tank { grid-row: span 2; position: relative; width: 52px; height: 104px; border: 2px solid var(--c); border-radius: 8px 8px 12px 12px; overflow: hidden; background: var(--surface-2); }
+.tank i { position: absolute; left: 0; right: 0; bottom: 0; height: var(--lvl, 0%); background: var(--c); opacity: .9; transition: height .5s ease; }
+.tank::after { content: ""; position: absolute; inset: 0; background-image: linear-gradient(to top, transparent calc(33.33% - 1px), var(--tick) calc(33.33% - 1px), var(--tick) 33.33%, transparent 33.33%, transparent calc(66.66% - 1px), var(--tick) calc(66.66% - 1px), var(--tick) 66.66%, transparent 66.66%); }
+.panel h3 a { font-size: 1.15rem; font-weight: 650; color: var(--ink); text-decoration: none; }
+.panel h3 a:hover { color: var(--c); text-decoration: underline; text-underline-offset: 3px; }
+.panel h3 .cid { font-family: var(--f-mono); font-size: .78rem; font-weight: 500; color: var(--c); margin-right: 6px; letter-spacing: .04em; }
+.panel .pct { font-size: .85rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.panel ul { grid-column: 1 / -1; list-style: none; margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--line); display: grid; gap: 4px; }
+.panel li a { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 6px; margin-inline: -6px; border-radius: 7px; text-decoration: none; color: var(--ink); font-size: .88rem; }
+.panel li a:hover { background: var(--c-bg); }
+.panel li code { font-family: var(--f-mono); font-size: .82rem; font-weight: 500; }
+.legend { margin-top: 12px; font-size: .84rem; color: var(--muted); }
+
+/* blocs CV / vidéo / tuteur */
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.box h3 { font-size: 1.2rem; font-weight: 650; }
+.box p { color: var(--muted); font-size: .94rem; }
+.slot { border: 1.5px dashed var(--line-strong); border-radius: 9px; padding: 14px 16px; background: var(--surface-2); color: var(--muted); font-style: italic; font-size: .92rem; }
+.skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.skills li { border: 1.5px dashed var(--line-strong); border-radius: 999px; padding: 4px 14px; color: var(--muted); font-style: italic; font-size: .9rem; }
+.video { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+.screen { aspect-ratio: 16 / 9; max-width: 100%; border: 1.5px dashed var(--line-strong); border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; text-align: center; padding: 16px; color: var(--muted); font-size: .92rem; }
+.screen b { display: block; font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
+.checks { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: .94rem; }
+.checks li::marker { color: var(--accent); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.step { display: grid; grid-template-columns: 10rem minmax(0, 1fr); gap: 20px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 20px; }
+.when b { display: block; font-family: var(--f-display); font-size: 1.4rem; line-height: 1.1; }
+.when span { display: block; font-family: var(--f-mono); font-size: .82rem; color: var(--muted); margin-top: 4px; }
+.when em { display: inline-block; margin-top: 10px; font-style: normal; font-size: .8rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 10px; }
+.step ul { margin: 0; padding-left: 1.1em; display: grid; gap: 5px; font-size: .94rem; }
+.step li::marker { color: var(--accent); }
+.weights { margin-top: 22px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; }
+.weights h3 { font-size: 1.1rem; margin-bottom: 12px; }
+.wbar { display: grid; grid-template-columns: 20fr 40fr 40fr; gap: 3px; }
+.wbar div { padding: 10px 12px; font-size: .82rem; min-width: 0; color: var(--on-accent); }
+.wbar div:nth-child(1) { background: var(--c1); border-radius: 7px 0 0 7px; }
+.wbar div:nth-child(2) { background: var(--c2); }
+.wbar div:nth-child(3) { background: var(--c4); border-radius: 0 7px 7px 0; }
+.wbar b { display: block; font-family: var(--f-display); font-size: 1.25rem; }
+.weights p { margin-top: 10px; color: var(--muted); font-size: .86rem; }
+
+footer { border-top: 1px solid var(--line); padding-block: 24px 8px; color: var(--muted); font-size: .86rem; }
+
+/* ---------- PAGE COMPÉTENCE ---------- */
+.comp-hero { background: var(--c-bg); border: 1px solid var(--c); border-radius: 16px; padding: clamp(22px, 4vw, 36px); margin-top: 28px; color: var(--c-ink); }
+.comp-hero .cid { display: inline-flex; align-items: center; justify-content: center; width: 54px; height: 54px; border-radius: 50%; background: var(--c); color: var(--surface); font-family: var(--f-mono); font-size: 1.2rem; margin-bottom: 16px; }
+.comp-hero h1 { font-size: clamp(1.8rem, 4.5vw, 3rem); font-weight: 700; letter-spacing: -.01em; }
+.comp-hero .meta { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 16px; align-items: center; font-size: .92rem; }
+.comp-hero .lvl { font-family: var(--f-mono); font-weight: 500; border: 1.5px solid var(--c); border-radius: 7px; padding: 3px 10px; }
+.progress { flex: 1 1 180px; min-width: 140px; height: 10px; border-radius: 999px; background: color-mix(in srgb, var(--c) 22%, transparent); overflow: hidden; }
+.progress i { display: block; height: 100%; width: var(--lvl, 0%); background: var(--c); transition: width .5s ease; }
+.ac-links { display: grid; gap: 14px; margin-top: 26px; }
+.ac-link { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 20px; align-items: center; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--c); border-radius: 12px; padding: 18px 20px; text-decoration: none; color: var(--ink); transition: transform .14s ease, box-shadow .14s ease; }
+.ac-link:hover { transform: translateX(3px); box-shadow: -3px 0 0 var(--c), 0 6px 20px color-mix(in srgb, var(--c) 18%, transparent); }
+.ac-link .code { font-family: var(--f-mono); font-size: .82rem; font-weight: 500; color: var(--c); }
+.ac-link h3 { font-size: 1.15rem; font-weight: 600; margin-top: 3px; }
+.ac-link .badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; align-items: center; }
+.ac-link .ill-badge { font-size: .72rem; font-weight: 600; color: var(--c); background: var(--c-bg); border-radius: 999px; padding: 2px 9px; }
+.ac-link .go { font-size: 1.4rem; color: var(--c); line-height: 1; }
+.ac-link .mini { grid-column: 1 / -1; height: 5px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.ac-link .mini i { display: block; height: 100%; width: var(--lvl, 0%); background: var(--c); }
+
+.backlink { display: inline-flex; align-items: center; gap: 7px; margin-top: 26px; font-size: .9rem; font-weight: 500; color: var(--muted); text-decoration: none; }
+.backlink:hover { color: var(--ink); }
+
+/* ---------- PAGE AC (rédaction) ---------- */
+.ac-head { background: var(--c-bg); border: 1px solid var(--c); border-radius: 16px; padding: clamp(20px, 3.5vw, 30px); margin-top: 28px; color: var(--c-ink); }
+.ac-head .tag { font-family: var(--f-mono); font-size: .8rem; font-weight: 500; color: var(--surface); background: var(--c); border-radius: 6px; padding: 3px 9px; }
+.ac-head h1 { font-size: clamp(1.5rem, 3.6vw, 2.3rem); font-weight: 700; margin-top: 14px; }
+.ac-head .comp-ref { margin-top: 10px; font-size: .9rem; opacity: .85; }
+.ac-grid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; margin-top: 24px; align-items: start; }
+.editor { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: grid; gap: 16px; min-width: 0; }
+.side { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.block { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px 20px; min-width: 0; }
+.block h4 { font-family: var(--f-mono); font-size: .74rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.crit { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; font-size: .92rem; }
+.crit li::marker { color: var(--c); }
+
+.field-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.field-head h3 { font-size: 1.15rem; font-weight: 650; }
+.saved { font-size: .78rem; color: var(--s3); font-weight: 600; opacity: 0; transition: opacity .3s; }
+.saved.on { opacity: 1; }
+textarea { width: 100%; min-height: 300px; resize: vertical; font: 400 .98rem/1.65 var(--f-body); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+textarea:focus { outline: none; border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 25%, transparent); }
+.count-row { display: flex; justify-content: space-between; font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+.seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line-strong); border-radius: 9px; overflow: hidden; max-width: 100%; }
+.seg button { font: 500 .82rem var(--f-body); color: var(--muted); background: transparent; border: 0; border-right: 1px solid var(--line); padding: 8px 13px; cursor: pointer; white-space: nowrap; }
+.seg button:last-child { border-right: 0; }
+.seg button:hover { background: var(--surface-2); color: var(--ink); }
+.seg button[data-s="0"][aria-pressed="true"] { background: var(--s0-bg); color: var(--s0); font-weight: 600; }
+.seg button[data-s="1"][aria-pressed="true"] { background: var(--s1-bg); color: var(--s1); font-weight: 600; }
+.seg button[data-s="2"][aria-pressed="true"] { background: var(--s2-bg); color: var(--s2); font-weight: 600; }
+.seg button[data-s="3"][aria-pressed="true"] { background: var(--s3-bg); color: var(--s3); font-weight: 600; }
+.ill-row { display: flex; align-items: center; gap: 10px; font-size: .92rem; margin-top: 14px; }
+.ill-row input { width: 18px; height: 18px; accent-color: var(--c); }
+
+/* dépôt PDF */
+.drop { border: 2px dashed var(--line-strong); border-radius: 11px; padding: 24px 18px; text-align: center; cursor: pointer; transition: border-color .15s, background .15s; display: grid; gap: 6px; justify-items: center; }
+.drop:hover, .drop.over { border-color: var(--c); background: var(--c-bg); }
+.drop .ico { font-size: 1.8rem; line-height: 1; }
+.drop b { font-size: .95rem; font-weight: 600; }
+.drop span { font-size: .82rem; color: var(--muted); }
+.drop input { display: none; }
+.file-card { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.file-card .fi { grid-row: span 2; width: 36px; height: 44px; border-radius: 5px; background: var(--c); color: var(--surface); display: grid; place-items: center; font-family: var(--f-mono); font-size: .62rem; font-weight: 500; }
+.file-card .fn { font-weight: 600; font-size: .92rem; word-break: break-word; }
+.file-card .fs { font-size: .8rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.file-card .acts { grid-row: span 2; display: flex; gap: 6px; }
+.file-card a.open, .file-card button.rm { font: 500 .8rem var(--f-body); border-radius: 7px; padding: 6px 11px; cursor: pointer; text-decoration: none; border: 1px solid var(--line-strong); background: var(--surface); color: var(--ink); }
+.file-card a.open { background: var(--c); color: var(--surface); border-color: var(--c); }
+.file-card a.open[aria-disabled="true"] { background: var(--surface-2); color: var(--muted); border-color: var(--line); cursor: default; }
+.note { font-size: .8rem; color: var(--muted); }
+.err { font-size: .82rem; color: var(--s1); font-weight: 600; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 32px 28px; }
+  .ac-grid, .video { grid-template-columns: minmax(0, 1fr); }
+  .step { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .summary .illus { margin-left: 0; text-align: left; }
+}
+@media (max-width: 520px) {
+  .id-card div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .seg button { border-bottom: 1px solid var(--line); }
+  .seg button:nth-child(2n) { border-right: 0; }
+  .seg button:nth-child(n+3) { border-bottom: 0; }
+  .wbar div { padding: 8px; font-size: .74rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .view, .tank i, .progress i, .ac-link { animation: none; transition: none; }
+}
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="#">PF3 · ESE · BUT3</a>
+    <nav class="crumbs" id="crumbs" aria-label="Fil d’Ariane"></nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- ACCUEIL -->
+  <div class="view" id="view-home">
+    <div class="hero">
+      <div>
+        <p class="kicker">Portfolio de compétences · 2026-2027</p>
+        <h1>Prénom Nom</h1>
+        <p class="lead">Alternant en BUT3 Génie électrique et informatique industrielle, parcours Électronique et systèmes embarqués. Traitement et distribution de l’eau, sur le terrain.</p>
+      </div>
+      <dl class="id-card">
+        <div><dt>Formation</dt><dd>BUT3 GEII, parcours ESE</dd></div>
+        <div><dt>Entreprise</dt><dd>Gaz et Eaux, Mamirolle</dd></div>
+        <div><dt>Tuteur péda.</dt><dd class="todo">À renseigner</dd></div>
+        <div><dt>Tuteur entreprise</dt><dd class="todo">À renseigner</dd></div>
+        <div><dt>Prochaine échéance</dt><dd id="next-deadline">6 nov. 2026 · S45</dd></div>
+      </dl>
+    </div>
+
+    <section id="dashboard">
+      <div class="sec-head">
+        <h2>Tableau de bord des AC</h2>
+        <p>Quatre compétences, douze apprentissages critiques. Clique sur le nom d’une compétence pour ouvrir sa page, ou sur un AC pour aller rédiger.</p>
+      </div>
+      <div class="summary" id="summary"></div>
+      <div class="dash" id="dash"></div>
+      <p class="legend">Avancement : vide, en chantier, fait, validé. Le statut se règle sur chaque page d’AC.</p>
+    </section>
+
+    <section id="cv">
+      <div class="sec-head"><h2>CV et savoir-être</h2><p>À joindre au portfolio. Prévu pour le 6 novembre 2026.</p></div>
+      <div class="two">
+        <div class="box">
+          <h3>Curriculum vitae</h3>
+          <p>Formation, alternance chez Gaz et Eaux, projets, compétences techniques et outils maîtrisés.</p>
+          <div class="slot">Lien ou aperçu du CV (PDF)</div>
+        </div>
+        <div class="box">
+          <h3>Savoir-être</h3>
+          <p>Les qualités qu’un recruteur technique retrouve dans ton parcours, avec un exemple pour chacune.</p>
+          <ul class="skills"><li>Qualité 1</li><li>Qualité 2</li><li>Qualité 3</li><li>Qualité 4</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="video">
+      <div class="sec-head"><h2>Capsule vidéo</h2><p>Adressée à un recruteur technique. Note PF6 Vidéo, à déposer avant le 11 juin 2027.</p></div>
+      <div class="video">
+        <div class="screen"><div><b>3 à 5 min</b>Emplacement de la vidéo<br>Fichier ou lien</div></div>
+        <div class="box">
+          <h3>Contenu à viser</h3>
+          <ul class="checks">
+            <li>Parler à un recruteur technique</li>
+            <li>Mettre en avant les points forts : stage, alternance, expérience</li>
+            <li>Montrer le terrain : télégestion, supervision, réseaux d’eau</li>
+            <li>Tenir entre 3 et 5 minutes</li>
+          </ul>
+          <div class="slot">Lien de la vidéo à ajouter</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="echeancier">
+      <div class="sec-head"><h2>Échéancier</h2><p>Trois jalons sur l’année, puis la note finale à la semaine 23.</p></div>
+      <ol class="steps">
+        <li class="step">
+          <div class="when"><b>S45</b><span>06/11/2026</span><em id="countdown">Entretien tuteur</em></div>
+          <ul>
+            <li>Définir le support (page web en ligne préconisée)</li>
+            <li>Traiter un AC en lien avec l’alternance, le stage ou une SAÉ de BUT2</li>
+            <li>CV et savoir-être</li>
+            <li>Entretien avec le tuteur. Note communiquée fin de S5, comptée au S6 (PF6 Entretien)</li>
+          </ul>
+        </li>
+        <li class="step">
+          <div class="when"><b>Avant le stage</b></div>
+          <ul>
+            <li>Présentation des compétences et AC de BUT3 avec ton analyse</li>
+            <li>Illustrer 6 AC couvrant les 4 compétences</li>
+            <li>Présentation au tuteur</li>
+          </ul>
+        </li>
+        <li class="step">
+          <div class="when"><b>S23</b><span>11/06/2027</span></div>
+          <ul>
+            <li>Compléter l’ensemble des AC</li>
+            <li>Déposer la capsule vidéo de 3 à 5 min (PF6 Vidéo)</li>
+            <li>Déposer le portfolio sur Moodle, en PDF ou en lien web (PF6 Rendu d’un livrable)</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="weights">
+        <h3>Comptage dans les UE du semestre 6</h3>
+        <div class="wbar">
+          <div><b>20 %</b>Entretien<br>(note donnée au S5)</div>
+          <div><b>40 %</b>Vidéo</div>
+          <div><b>40 %</b>Rendu d’un livrable</div>
+        </div>
+        <p>Trois notes, toutes rattachées au semestre 6.</p>
+      </div>
+    </section>
+
+    <section id="tuteur">
+      <div class="sec-head"><h2>Demandes du tuteur pédagogique</h2><p>Le cahier des charges prévoit un espace pour les consignes propres à ton tuteur.</p></div>
+      <div class="box"><div class="slot">Consignes spécifiques à ajouter après le rendez-vous avec le tuteur</div></div>
+    </section>
+
+    <footer>Portfolio BUT3 GEII · parcours ESE · 2026-2027 · Dépôt Moodle (PDF ou lien web) avant le 11 juin 2027.</footer>
+  </div>
+
+  <!-- PAGE COMPÉTENCE -->
+  <div class="view" id="view-comp" hidden></div>
+
+  <!-- PAGE AC -->
+  <div class="view" id="view-ac" hidden></div>
+</main>
+
+<script>
+(function () {
+  var COMPS = [
+    { id: 'C1', short: 'Concevoir', title: 'Concevoir la partie GEII d’un système', level: 3, acs: [
+      { code: 'AC31.01', title: 'Contribuer à la rédaction d’un cahier des charges', crit: [
+        'Identifier les besoins du client avec méthode et une communication adaptée',
+        'Rédiger en détail les fonctions de service et de contrainte, en accord avec le client'] },
+      { code: 'AC31.02', title: 'Prouver la pertinence de ses choix technologiques', crit: [
+        'Argumenter chaque choix de façon structurée, précise et compréhensible',
+        'Rester en adéquation avec le cahier des charges : coûts et délais, fiabilité, normes, impact environnemental, veille et obsolescence'] },
+      { code: 'AC31.03', title: 'Rédiger un dossier de conception', crit: [
+        'Dossier structuré, clair, détaillé et complet',
+        'En adéquation avec le cahier des charges'] }
+    ] },
+    { id: 'C2', short: 'Vérifier', title: 'Vérifier la partie GEII d’un système', level: 3, acs: [
+      { code: 'AC32.01', title: 'Évaluer la cause racine d’un dysfonctionnement', crit: [
+        'Identifier précisément les conditions d’apparition du défaut',
+        'Isoler le bloc ou sous-système responsable, en justifiant ce qui fonctionne',
+        'Dire s’il s’agit d’une erreur de conception ou de réalisation'] },
+      { code: 'AC32.02', title: 'Proposer une solution corrective à un dysfonctionnement', crit: [
+        'Erreur de réalisation : solution adéquate, avec enjeux économiques, environnementaux et réglementaires',
+        'Erreur de conception : pistes de solution judicieuses',
+        'Présentation argumentée des solutions'] },
+      { code: 'AC32.03', title: 'Produire une procédure d’essais pour valider la conformité d’un système', crit: [
+        'Procédure complète, rigoureuse, ordonnée et applicable (chronologie, matériel, répétabilité, conditions de test)',
+        'Calibration des appareils, habilitations et certifications des opérateurs préconisées',
+        'Documents faciles à remplir, procès-verbal formalisé'] }
+    ] },
+    { id: 'C3', short: 'Maintenir', title: 'Assurer le maintien en condition opérationnelle d’un système', level: 2, acs: [
+      { code: 'AC33.01', title: 'Proposer une solution de maintenance', crit: [
+        'Décrire le système, ses énergies et technologies (cahier des charges, schémas, plans)',
+        'Identifier les défaillances avec les bons outils : historiques, GMAO, Pareto, Ishikawa, 5M',
+        'Mettre en place un plan de maintenance (AMDEC) avec indicateurs de surveillance',
+        'Mener les travaux d’amélioration et de fiabilisation'] },
+      { code: 'AC33.02', title: 'Évaluer les coûts d’indisponibilité et de maintenance d’un système', crit: [
+        'Exploiter les documents (comptes rendus, historiques, rapports d’incident) et inventorier tous les coûts',
+        'Échanger avec utilisateurs, fournisseurs et clients',
+        'Classer en coûts d’indisponibilité et coûts de maintenance, puis proposer une amélioration'] },
+      { code: 'AC33.03', title: 'Proposer un appui technique aux différents acteurs à l’échelle nationale et internationale', crit: [
+        'Collecter, analyser et synthétiser les informations techniques utiles',
+        'Présenter les avantages et inconvénients de chaque proposition',
+        'Produire des documents compréhensibles et illustrés, à l’écrit comme à l’oral'] }
+    ] },
+    { id: 'C4', short: 'Implanter', title: 'Implanter un système matériel ou logiciel', level: 2, acs: [
+      { code: 'AC34.01', title: 'Produire une procédure d’installation et de mise en service d’un système', crit: [
+        'Notices d’installation et de mise en service en français et en anglais : ressources, compétences, sécurité, étapes, tests',
+        'Notice d’utilisation en plusieurs langues',
+        'Présentation de mise en service claire, avec points de vigilance et sécurité'] },
+      { code: 'AC34.02', title: 'Exécuter la mise en service d’un système en respectant la procédure', crit: [
+        'Respecter la démarche qualité : procédure, tests de mise en service, validation, normes',
+        'Faire une démonstration de mise en service précise et adaptée'] },
+      { code: 'AC34.03', title: 'Produire le dossier de conformité du système en gérant le versionnage', crit: [
+        'Dossier clair et documenté : preuves de conformité, coûts, normes, fonctionnalités face au cahier des charges',
+        'Versionnage cohérent du système et de la documentation, historique commenté'] }
+    ] }
+  ];
+  var STATUS = ['Vide', 'En chantier', 'Fait', 'Validé'];
+  var KEY = 'pf3-ese-v2';
+  var state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { state = {}; }
+  var blobs = {}; // objectURL de session pour les PDF tout juste déposés
+
+  function get(code) { return state[code] || (state[code] = { s: 0, i: false, text: '', pdf: null }); }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch (e) { return false; } }
+  function esc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+  function codeToHash(code) { return code.toLowerCase().replace('.', '-'); }
+  function hashToCode(h) { return h.toUpperCase().replace('-', '.'); }
+  function compOf(code) { return COMPS.filter(function (c) { return c.acs.some(function (a) { return a.code === code; }); })[0]; }
+  function acOf(code) { var r; COMPS.forEach(function (c) { c.acs.forEach(function (a) { if (a.code === code) r = a; }); }); return r; }
+  function cidKey(id) { return id.toLowerCase(); } // 'c1'
+  function pct(c) { var s = 0; c.acs.forEach(function (a) { s += get(a.code).s; }); return Math.round(s / (c.acs.length * 3) * 100); }
+  function fmtSize(b) { return b < 1024 ? b + ' o' : b < 1048576 ? (b / 1024).toFixed(0) + ' Ko' : (b / 1048576).toFixed(1) + ' Mo'; }
+
+  /* ----- fil d'Ariane ----- */
+  function setCrumbs(parts) {
+    var html = parts.map(function (p, i) {
+      var sep = i ? '<span class="sep">›</span>' : '';
+      return sep + (p.href != null ? '<a href="' + p.href + '">' + esc(p.label) + '</a>' : '<span class="cur">' + esc(p.label) + '</span>');
+    }).join('');
+    document.getElementById('crumbs').innerHTML = html;
+  }
+
+  /* ----- ACCUEIL : tableau de bord ----- */
+  function renderDash() {
+    var counts = [0, 0, 0, 0], ill = 0, covered = {};
+    var panels = COMPS.map(function (c) {
+      var rows = c.acs.map(function (a) {
+        var s = get(a.code); counts[s.s]++;
+        if (s.i) { ill++; covered[c.id] = true; }
+        return '<li><a href="#' + codeToHash(a.code) + '"><code>' + a.code + '</code><span class="pill" data-s="' + s.s + '">' + STATUS[s.s] + '</span></a></li>';
+      }).join('');
+      var p = pct(c);
+      return '<div class="panel" data-comp="' + cidKey(c.id) + '">' +
+        '<div class="tank" role="img" aria-label="Cuve ' + c.id + ' remplie à ' + p + ' %"><i style="--lvl:' + p + '%"></i></div>' +
+        '<h3><a href="#' + cidKey(c.id) + '"><span class="cid">' + c.id + '</span>' + c.short + '</a></h3>' +
+        '<p class="pct">' + p + ' % · niveau ' + c.level + '</p><ul>' + rows + '</ul></div>';
+    });
+    document.getElementById('dash').innerHTML = panels.join('');
+    document.getElementById('summary').innerHTML =
+      '<div class="counts">' + STATUS.map(function (n, i) { return '<span class="count"><b>' + counts[i] + '</b><span class="pill" data-s="' + i + '">' + n + '</span></span>'; }).join('') + '</div>' +
+      '<div class="illus">AC illustrés : <b>' + ill + ' / 6</b> · compétences couvertes : <b>' + Object.keys(covered).length + ' / 4</b></div>';
+  }
+
+  /* ----- PAGE COMPÉTENCE ----- */
+  function renderComp(cid) {
+    var c = COMPS.filter(function (x) { return cidKey(x.id) === cid; })[0];
+    if (!c) { location.hash = ''; return; }
+    var p = pct(c);
+    var links = c.acs.map(function (a) {
+      var s = get(a.code), ap = Math.round(s.s / 3 * 100);
+      return '<a class="ac-link" href="#' + codeToHash(a.code) + '">' +
+        '<div><span class="code">' + a.code + '</span><h3>' + esc(a.title) + '</h3></div>' +
+        '<div class="badges">' + (s.i ? '<span class="ill-badge">Illustré</span>' : '') +
+          '<span class="pill" data-s="' + s.s + '">' + STATUS[s.s] + '</span><span class="go" aria-hidden="true">→</span></div>' +
+        '<div class="mini"><i style="--lvl:' + ap + '%"></i></div></a>';
+    }).join('');
+    var el = document.getElementById('view-comp');
+    el.setAttribute('data-comp', cid);
+    el.innerHTML =
+      '<div class="comp-hero"><span class="cid">' + c.id + '</span>' +
+      '<h1>' + esc(c.title) + '</h1>' +
+      '<div class="meta"><span class="lvl">Niveau ' + c.level + '</span>' +
+        '<div class="progress" role="img" aria-label="Avancement ' + p + ' %"><i style="--lvl:' + p + '%"></i></div>' +
+        '<span>' + p + ' % · ' + c.acs.length + ' apprentissages critiques</span></div></div>' +
+      '<div class="ac-links">' + links + '</div>' +
+      '<a class="backlink" href="#">← Retour au tableau de bord</a>';
+    setCrumbs([{ label: 'Accueil', href: '#' }, { label: c.id + ' · ' + c.short }]);
+  }
+
+  /* ----- PAGE AC (rédaction + dépôt) ----- */
+  function renderAC(code) {
+    var a = acOf(code), c = compOf(code);
+    if (!a || !c) { location.hash = ''; return; }
+    var s = get(code), cid = cidKey(c.id);
+    var crit = a.crit.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('');
+    var segs = STATUS.map(function (n, i) { return '<button type="button" data-s="' + i + '" aria-pressed="' + (s.s === i) + '">' + n + '</button>'; }).join('');
+    var el = document.getElementById('view-ac');
+    el.setAttribute('data-comp', cid);
+    el.innerHTML =
+      '<div class="ac-head"><span class="tag">' + a.code + '</span>' +
+        '<h1>' + esc(a.title) + '</h1>' +
+        '<p class="comp-ref">' + c.id + ' · ' + esc(c.title) + ' — niveau ' + c.level + '</p></div>' +
+      '<div class="ac-grid">' +
+        '<div class="editor">' +
+          '<div class="field-head"><h3>Ma rédaction</h3><span class="saved" id="saved">Enregistré</span></div>' +
+          '<textarea id="draft" placeholder="Contexte (site, système), ce que j’ai fait (démarche, choix, résultats), preuves… Rédige librement, tout s’enregistre automatiquement.">' + esc(s.text || '') + '</textarea>' +
+          '<div class="count-row"><span id="wc">0 mot</span><span>Sauvegarde locale à ce navigateur</span></div>' +
+          '<div><h4 style="font-family:var(--f-mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px">Pièce jointe — PDF</h4>' +
+            '<div id="pdf-zone"></div></div>' +
+        '</div>' +
+        '<div class="side">' +
+          '<div class="block"><h4>Avancement</h4><div class="seg" id="seg" role="group" aria-label="Statut de ' + a.code + '">' + segs + '</div>' +
+            '<label class="ill-row"><input type="checkbox" id="ill"' + (s.i ? ' checked' : '') + '> Illustré dans le portfolio</label>' +
+            '<p class="note" style="margin-top:8px">Il faut en illustrer 6, toutes compétences confondues.</p></div>' +
+          '<div class="block"><h4>Critères observables</h4><ul class="crit">' + crit + '</ul></div>' +
+        '</div>' +
+      '</div>' +
+      '<a class="backlink" href="#' + cid + '">← Retour à la compétence ' + c.id + '</a>';
+    setCrumbs([{ label: 'Accueil', href: '#' }, { label: c.id, href: '#' + cid }, { label: a.code }]);
+    wireAC(code);
+  }
+
+  function renderPdfZone(code) {
+    var s = get(code), zone = document.getElementById('pdf-zone');
+    if (!zone) return;
+    if (s.pdf) {
+      if (!blobs[code] && s.pdf.data) {
+        try {
+          var bin = atob(s.pdf.data.split(',')[1]), arr = new Uint8Array(bin.length);
+          for (var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+          blobs[code] = URL.createObjectURL(new Blob([arr], { type: 'application/pdf' }));
+        } catch (e) {}
+      }
+      var url = blobs[code] || null;
+      var openBtn = url
+        ? '<a class="open" href="' + url + '" target="_blank" rel="noopener">Ouvrir</a>'
+        : '<a class="open" aria-disabled="true" title="Redépose le fichier pour l’ouvrir">Ouvrir</a>';
+      zone.innerHTML =
+        '<div class="file-card"><div class="fi">PDF</div>' +
+          '<div class="fn">' + esc(s.pdf.name) + '</div>' +
+          '<div class="fs">' + fmtSize(s.pdf.size) + '</div>' +
+          '<div class="acts">' + openBtn + '<button type="button" class="rm" id="rm-pdf">Retirer</button></div>' +
+        '</div>' +
+        (s.pdf.data ? '' : '<p class="note" id="pdf-note">Fichier gardé pour cette session. Il n’a pas pu être mémorisé durablement — redépose-le si tu reviens plus tard.</p>');
+      document.getElementById('rm-pdf').addEventListener('click', function () {
+        if (blobs[code]) { try { URL.revokeObjectURL(blobs[code]); } catch (e) {} delete blobs[code]; }
+        s.pdf = null; save(); renderPdfZone(code);
+      });
+    } else {
+      zone.innerHTML =
+        '<label class="drop" id="drop"><div class="ico" aria-hidden="true">⬆</div>' +
+          '<b>Déposer un PDF</b><span>Glisse le fichier ici ou clique pour choisir</span>' +
+          '<input type="file" id="file" accept="application/pdf,.pdf"></label>' +
+        '<p class="err" id="pdf-err" hidden></p>';
+      var drop = document.getElementById('drop'), input = document.getElementById('file');
+      ['dragenter', 'dragover'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add('over'); }); });
+      ['dragleave', 'drop'].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove('over'); }); });
+      drop.addEventListener('drop', function (e) { if (e.dataTransfer.files[0]) handleFile(code, e.dataTransfer.files[0]); });
+      input.addEventListener('change', function () { if (input.files[0]) handleFile(code, input.files[0]); });
+    }
+  }
+
+  function handleFile(code, file) {
+    var err = document.getElementById('pdf-err');
+    if (file.type !== 'application/pdf' && !/\.pdf$/i.test(file.name)) {
+      if (err) { err.textContent = 'Merci de choisir un fichier PDF.'; err.hidden = false; }
+      return;
+    }
+    var s = get(code);
+    if (blobs[code]) { try { URL.revokeObjectURL(blobs[code]); } catch (e) {} }
+    blobs[code] = URL.createObjectURL(file);
+    s.pdf = { name: file.name, size: file.size, data: null };
+    renderPdfZone(code); // affichage immédiat via le blob de session
+    var r = new FileReader();
+    r.onload = function () {
+      s.pdf.data = r.result;        // tentative de mémorisation durable
+      if (!save()) { s.pdf.data = null; save(); } // quota dépassé : on garde juste le nom
+      renderPdfZone(code);
+    };
+    r.onerror = function () { save(); };
+    r.readAsDataURL(file);
+  }
+
+  function wireAC(code) {
+    var s = get(code);
+    var ta = document.getElementById('draft'), wc = document.getElementById('wc'), savedEl = document.getElementById('saved');
+    function words(t) { t = t.trim(); return t ? t.split(/\s+/).length : 0; }
+    function upWc() { var n = words(ta.value); wc.textContent = n + (n > 1 ? ' mots' : ' mot'); }
+    upWc();
+    var t;
+    ta.addEventListener('input', function () {
+      upWc();
+      clearTimeout(t);
+      t = setTimeout(function () {
+        s.text = ta.value; save();
+        savedEl.classList.add('on'); setTimeout(function () { savedEl.classList.remove('on'); }, 1200);
+      }, 450);
+    });
+    document.getElementById('seg').addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      s.s = +b.dataset.s; save();
+      this.querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+    });
+    document.getElementById('ill').addEventListener('change', function () { s.i = this.checked; save(); });
+    renderPdfZone(code);
+  }
+
+  /* ----- routeur ----- */
+  var home = document.getElementById('view-home'), vComp = document.getElementById('view-comp'), vAc = document.getElementById('view-ac');
+  function show(which) { home.hidden = which !== 'home'; vComp.hidden = which !== 'comp'; vAc.hidden = which !== 'ac'; }
+  function route() {
+    var h = (location.hash || '').replace(/^#/, '');
+    if (/^ac\d\d-\d\d$/.test(h)) { renderAC(hashToCode(h)); show('ac'); }
+    else if (/^c[1-4]$/.test(h)) { renderComp(h); show('comp'); }
+    else { renderDash(); show('home'); setCrumbs([{ label: 'Portfolio' }]); }
+    window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+
+  /* compte à rebours S45 */
+  var d = Math.ceil((new Date('2026-11-06T00:00:00') - new Date()) / 864e5);
+  var txt = d > 1 ? 'Dans ' + d + ' jours' : d === 1 ? 'Demain' : d === 0 ? 'Aujourd’hui' : 'Échéance passée';
+  var cd = document.getElementById('countdown'); if (cd) cd.textContent = txt;
+  var nd = document.getElementById('next-deadline'); if (nd) nd.textContent = '6 nov. 2026 · S45 · ' + txt.toLowerCase();
+
+  route();
+})();
+</script>
+</body>
+</html>
