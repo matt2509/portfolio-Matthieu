@@ -137,7 +137,7 @@ section { padding-block: 36px; border-top: 1px solid var(--line); }
 .panel li code { font-family: var(--f-mono); font-size: .82rem; font-weight: 500; }
 .legend { margin-top: 12px; font-size: .84rem; color: var(--muted); }
 
-/* blocs CV / vidéo / tuteur */
+/* blocs CV / vidéo */
 .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 14px; }
 .box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
 .box h3 { font-size: 1.2rem; font-weight: 650; }
@@ -145,7 +145,7 @@ section { padding-block: 36px; border-top: 1px solid var(--line); }
 .slot { border: 1.5px dashed var(--line-strong); border-radius: 9px; padding: 14px 16px; background: var(--surface-2); color: var(--muted); font-style: italic; font-size: .92rem; }
 .skills { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .skills li { border: 1.5px dashed var(--line-strong); border-radius: 999px; padding: 4px 14px; color: var(--muted); font-style: italic; font-size: .9rem; }
-.video { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 20px; }
+.video { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 760px; }
 .screen { aspect-ratio: 16 / 9; max-width: 100%; border: 1.5px dashed var(--line-strong); border-radius: 11px; background: var(--surface-2); display: grid; place-items: center; text-align: center; padding: 16px; color: var(--muted); font-size: .92rem; }
 .screen b { display: block; font-family: var(--f-display); font-size: 1.5rem; color: var(--ink); }
 .checks { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; font-size: .94rem; }
@@ -279,15 +279,14 @@ body { margin: 0; }
     <div class="hero">
       <div>
         <p class="kicker">Portfolio de compétences · 2026-2027</p>
-        <h1>Matthieu INAL</h1>
+        <h1>Prénom Nom</h1>
         <p class="lead">Alternant en BUT3 Génie électrique et informatique industrielle, parcours Électronique et systèmes embarqués. Traitement et distribution de l’eau, sur le terrain.</p>
       </div>
       <dl class="id-card">
         <div><dt>Formation</dt><dd>BUT3 GEII, parcours ESE</dd></div>
         <div><dt>Entreprise</dt><dd>Gaz et Eaux, Mamirolle</dd></div>
-        <div><dt>Tuteur Portfolio</dt><dd class="todo">E.GAVIGNET</dd></div>
-        <div><dt>Tuteur entreprise</dt><dd class="todo">D.PESSIEAU</dd></div>
-        <div><dt>Prochaine échéance</dt><dd id="next-deadline">6 nov. 2026 · S45</dd></div>
+        <div><dt>Tuteur péda.</dt><dd class="todo">À renseigner</dd></div>
+        <div><dt>Tuteur entreprise</dt><dd class="todo">À renseigner</dd></div>
       </dl>
     </div>
 
@@ -302,18 +301,11 @@ body { margin: 0; }
     </section>
 
     <section id="cv">
-      <div class="sec-head"><h2>CV et savoir-être</h2><p>À joindre au portfolio. Prévu pour le 6 novembre 2026.</p></div>
-      <div class="two">
-        <div class="box">
-          <h3>Curriculum vitae</h3>
-          <p>Formation, alternance chez Gaz et Eaux, projets, compétences techniques et outils maîtrisés.</p>
-          <div class="slot">Lien ou aperçu du CV (PDF)</div>
-        </div>
-        <div class="box">
-          <h3>Savoir-être</h3>
-          <p>Les qualités qu’un recruteur technique retrouve dans ton parcours, avec un exemple pour chacune.</p>
-          <ul class="skills"><li>Qualité 1</li><li>Qualité 2</li><li>Qualité 3</li><li>Qualité 4</li></ul>
-        </div>
+      <div class="sec-head"><h2>Curriculum vitae</h2><p>À joindre au portfolio.</p></div>
+      <div class="box">
+        <h3>Mon CV</h3>
+        <p>Formation, alternance chez Gaz et Eaux, projets, compétences techniques et outils maîtrisés.</p>
+        <div class="slot">Lien ou aperçu du CV (PDF)</div>
       </div>
     </section>
 
@@ -321,65 +313,10 @@ body { margin: 0; }
       <div class="sec-head"><h2>Capsule vidéo</h2><p>Adressée à un recruteur technique. Note PF6 Vidéo, à déposer avant le 11 juin 2027.</p></div>
       <div class="video">
         <div class="screen"><div><b>3 à 5 min</b>Emplacement de la vidéo<br>Fichier ou lien</div></div>
-        <div class="box">
-          <h3>Contenu à viser</h3>
-          <ul class="checks">
-            <li>Parler à un recruteur technique</li>
-            <li>Mettre en avant les points forts : stage, alternance, expérience</li>
-            <li>Montrer le terrain : télégestion, supervision, réseaux d’eau</li>
-            <li>Tenir entre 3 et 5 minutes</li>
-          </ul>
-          <div class="slot">Lien de la vidéo à ajouter</div>
-        </div>
       </div>
     </section>
 
-    <section id="echeancier">
-      <div class="sec-head"><h2>Échéancier</h2><p>Trois jalons sur l’année, puis la note finale à la semaine 23.</p></div>
-      <ol class="steps">
-        <li class="step">
-          <div class="when"><b>S45</b><span>06/11/2026</span><em id="countdown">Entretien tuteur</em></div>
-          <ul>
-            <li>Définir le support (page web en ligne préconisée)</li>
-            <li>Traiter un AC en lien avec l’alternance, le stage ou une SAÉ de BUT2</li>
-            <li>CV et savoir-être</li>
-            <li>Entretien avec le tuteur. Note communiquée fin de S5, comptée au S6 (PF6 Entretien)</li>
-          </ul>
-        </li>
-        <li class="step">
-          <div class="when"><b>Avant le stage</b></div>
-          <ul>
-            <li>Présentation des compétences et AC de BUT3 avec ton analyse</li>
-            <li>Illustrer 6 AC couvrant les 4 compétences</li>
-            <li>Présentation au tuteur</li>
-          </ul>
-        </li>
-        <li class="step">
-          <div class="when"><b>S23</b><span>11/06/2027</span></div>
-          <ul>
-            <li>Compléter l’ensemble des AC</li>
-            <li>Déposer la capsule vidéo de 3 à 5 min (PF6 Vidéo)</li>
-            <li>Déposer le portfolio sur Moodle, en PDF ou en lien web (PF6 Rendu d’un livrable)</li>
-          </ul>
-        </li>
-      </ol>
-      <div class="weights">
-        <h3>Comptage dans les UE du semestre 6</h3>
-        <div class="wbar">
-          <div><b>20 %</b>Entretien<br>(note donnée au S5)</div>
-          <div><b>40 %</b>Vidéo</div>
-          <div><b>40 %</b>Rendu d’un livrable</div>
-        </div>
-        <p>Trois notes, toutes rattachées au semestre 6.</p>
-      </div>
-    </section>
-
-    <section id="tuteur">
-      <div class="sec-head"><h2>Demandes du tuteur pédagogique</h2><p>Le cahier des charges prévoit un espace pour les consignes propres à ton tuteur.</p></div>
-      <div class="box"><div class="slot">Consignes spécifiques à ajouter après le rendez-vous avec le tuteur</div></div>
-    </section>
-
-    <footer>Portfolio BUT3 GEII · parcours ESE · 2026-2027 · Dépôt Moodle (PDF ou lien web) avant le 11 juin 2027.</footer>
+    <footer>Portfolio BUT3 GEII · parcours ESE · 2026-2027</footer>
   </div>
 
   <!-- PAGE COMPÉTENCE -->
@@ -648,11 +585,7 @@ body { margin: 0; }
   }
   window.addEventListener('hashchange', route);
 
-  /* compte à rebours S45 */
-  var d = Math.ceil((new Date('2026-11-06T00:00:00') - new Date()) / 864e5);
-  var txt = d > 1 ? 'Dans ' + d + ' jours' : d === 1 ? 'Demain' : d === 0 ? 'Aujourd’hui' : 'Échéance passée';
-  var cd = document.getElementById('countdown'); if (cd) cd.textContent = txt;
-  var nd = document.getElementById('next-deadline'); if (nd) nd.textContent = '6 nov. 2026 · S45 · ' + txt.toLowerCase();
+
 
   route();
 })();
